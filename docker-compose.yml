@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+  applocator.webapi:
+    image: ${DOCKER_REGISTRY-}applocatorwebapi
+    build:
+      context: .
+      dockerfile: AppLocator.WebApi/Dockerfile
+    depends_on:
+      - mongo
+    networks:
+      - locator-network
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
+    networks:
+      - locator-network
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    depends_on:
+      - mongo
+    networks:
+      - locator-network
+networks: 
+    locator-network:
+        driver: bridge
